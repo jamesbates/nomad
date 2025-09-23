@@ -2176,7 +2176,6 @@ class MSection(metaclass=MObjectMeta):
                     pass
 
         if 'definitions' in processed:
-            self.definitions.custom_package = True
             if self.metadata:
                 self.definitions.entry_id = self.metadata.entry_id
                 self.definitions.upload_id = self.metadata.upload_id
@@ -4125,7 +4124,10 @@ class Package(Definition):
         self.errors, self.warnings = [], []
         self.upload_id = None
         self.entry_id = None
-        self.custom_package: bool = False
+
+    @property
+    def m_is_custom_package(self):
+        return self.upload_id and self.entry_id
 
     def __init_metainfo__(self):
         super().__init_metainfo__()
@@ -4196,7 +4198,7 @@ class Package(Definition):
         return super().m_from_dict(data, **kwargs)
 
     def qualified_name(self):
-        if self.custom_package:
+        if self.m_is_custom_package:
             # if entry_id is set, it is coming from custom definition stored in archive or mongo
             # check m_parent as well as the above condition may not be met in tests
             return f'entry_id:{self.entry_id or "*"}'

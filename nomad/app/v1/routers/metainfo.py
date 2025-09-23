@@ -48,12 +48,7 @@ class PackageDefinition(Document):
         if package is None:
             return
 
-        if cls.objects(snapshot_package_id=package.definition_id).count() > 0:
-            logger.info(f'Package already exists.', package_id={package.definition_id})
-            return
-
-        cls(
-            snapshot_package_id=package.definition_id,
+        fields: dict = dict(
             entry_id=package.entry_id,
             upload_id=package.upload_id,
             qualified_name=package.qualified_name(),
@@ -61,7 +56,15 @@ class PackageDefinition(Document):
             snapshot_section_ids=[
                 section.definition_id for section in package.section_definitions
             ],
-        ).save()
+            date_created=datetime.datetime.now(),
+        )
+
+        target = cls.objects(snapshot_package_id=package.definition_id)
+
+        if target.count() > 0:
+            target.update_one(**{f'set__{k}': v for k, v in fields.items()})
+        else:
+            cls(snapshot_package_id=package.definition_id, **fields).save()
 
     @classmethod
     def get_by(cls, snapshot_id: str):

@@ -112,16 +112,8 @@ class Context(MetainfoContext):
             # in that case, `_get_ids` will fail as there is no attached archive
             # meanwhile, the reference shall be located under `definitions` in the original archive
             # we distinguish between the two cases by checking if the target_root is a package
-            if (
-                isinstance(target_root, Package)
-                and target_root.upload_id
-                and target_root.entry_id
-            ):
-                upload_id, entry_id = target_root.upload_id, target_root.entry_id
-
-                return (
-                    f'../uploads/{upload_id}/archive/{entry_id}#definitions/{fragment}'
-                )
+            if isinstance(target_root, Package) and target_root.m_is_custom_package:
+                return f'../uploads/{target_root.upload_id}/archive/{target_root.entry_id}#definitions/{fragment}'
 
             upload_id, entry_id = self._get_ids(target_root, required=True)
 

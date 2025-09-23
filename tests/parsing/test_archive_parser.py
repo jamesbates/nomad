@@ -52,6 +52,12 @@ def test_archive_parser(raw_files_function):
     archive.m_context = Context()
     ArchiveParser().parse(mainfile, archive)
 
+    # hack to set entry_id and upload_id for testing
+    # they shall be properly set during normal processing
+    package = archive.data.m_def.m_parent
+    package.entry_id = 'my_entry_id'
+    package.upload_id = 'my_upload_id'
+
     assert archive.data.m_to_dict() == archive_data['data']
 
 

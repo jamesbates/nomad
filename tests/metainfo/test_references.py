@@ -389,6 +389,12 @@ def test_parse_with_references(mainfile):
     )[0]
     normalize_all(entry_archive)
 
+    # hack to set entry_id and upload_id for testing
+    # they shall be properly set during normal processing
+    package = entry_archive.data.m_def.m_parent
+    package.entry_id = 'my_entry_id'
+    package.upload_id = 'my_upload_id'
+
     m_def = entry_archive.m_to_dict()['data']['m_def']
     assert '#/definitions/' in m_def
 
